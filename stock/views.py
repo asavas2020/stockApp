@@ -11,7 +11,9 @@ from .models import (
 from .serializers import (
     CategorySerializer,
     BrandSerializer,
-    ProductSerializer
+    ProductSerializer,
+    FirmSerializer,
+    TransactionSerializer
 )
 
 
@@ -37,4 +39,19 @@ class ProductView(viewsets.ModelViewSet):
     search_fields = ['name']
 
 
+class FirmView(viewsets.ModelViewSet):
+    queryset = Firm.objects.all()
+    serializer_class = FirmSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
 
+
+class TransactionView(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['firm', 'transaction', 'product']
+    search_fields = ['firm']
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
